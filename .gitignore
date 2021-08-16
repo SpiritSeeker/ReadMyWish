@@ -4,3 +4,4 @@ __pycache__/
 # Files
 *.secret
 .DS_Store
+*.json
