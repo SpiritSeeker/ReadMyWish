@@ -1,0 +1,6 @@
+# Directories
+__pycache__/
+
+# Files
+*.secret
+.DS_Store
