@@ -1,22 +1,36 @@
-def GetString(item):
-    return_str = ''
-    return_str += '[' + item['volumeInfo']['title'] + ']('
-    return_str += item['volumeInfo']['previewLink'] + ')'
-    if 'subtitle' in item['volumeInfo'].keys():
-        return_str += ' - ' + item['volumeInfo']['subtitle']
-    return_str += '\n'
-    return_str += 'by '
+import discord
+
+def GetLargestThumbnail(item):
+    try:
+        urls = item['volumeInfo']['imageLinks'].keys()
+        if len(urls) == 0:
+            return None
+
+        sizes = ['largeThumbnail', 'thumbnail', 'smallThumbnail']
+        for size in sizes:
+            if size in urls:
+                return item['volumeInfo']['imageLinks'][size]
+        return None
+    except:
+        return None
+
+def GetEmbed(item):
+    embed = discord.Embed()
+    embed.title = item['volumeInfo']['title']
+    embed.url = item['volumeInfo']['previewLink']
+
+    description_string = 'by '
     authors = item['volumeInfo']['authors']
-    return_str += authors[0]
+    description_string += authors[0]
     if len(authors) > 1:
         for i in range(len(authors) - 1):
-            return_str += ', ' + authors[i+1]
+            description_string += ', ' + authors[i+1]
     try:
-        return_str += ' | ' + str(item['volumeInfo']['pageCount']) + ' pages'
+        description_string += ' | ' + str(item['volumeInfo']['pageCount']) + ' pages'
     except:
         pass
     try:
-        return_str += ' | Published: ' + str(item['volumeInfo']['publishedDate'])
+        description_string += ' | Published: ' + str(item['volumeInfo']['publishedDate'])
     except:
         pass
     try:
@@ -26,8 +40,15 @@ def GetString(item):
                 string_segment += item['volumeInfo']['categories'][i]
             else:
                 string_segment += ', ' + item['volumeInfo']['categories'][i]
-        return_str += string_segment
+        description_string += string_segment
     except:
         pass
-    return_str += '\n\n' + '> {}'.format(item['volumeInfo']['description'])
-    return return_str
+
+    description_string += '\n\n> {}'.format(item['volumeInfo']['description'])
+    embed.description = description_string
+
+    thumbnailUrl = GetLargestThumbnail(item)
+    if not thumbnailUrl == None:
+        embed.set_thumbnail(url=thumbnailUrl)
+
+    return embed
