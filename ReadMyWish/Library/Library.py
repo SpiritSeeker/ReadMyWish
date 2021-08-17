@@ -1,4 +1,4 @@
-from Book import Book
+from ReadMyWish.Library.Book import Book
 import json
 import time
 import os.path
