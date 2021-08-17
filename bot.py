@@ -44,17 +44,34 @@ async def on_message(message):
         await message.reply(embed=embed)
 
 async def CommandHandler(message):
-    if message.content.startswith(commandPrefix + 'search'):
+    if message.content.startswith(commandPrefix + 'search '):
         ret = GoogleBooksAPI.BookSearch(message.content.replace(commandPrefix + 'search ', ''))
         print_string = GetString(ret)
         embed = discord.Embed()
         embed.description = print_string
         await message.reply(embed=embed)
-    if message.content.startswith(commandPrefix + 's'):
+    if message.content.startswith(commandPrefix + 's '):
         ret = GoogleBooksAPI.BookSearch(message.content.replace(commandPrefix + 's ', ''))
         print_string = GetString(ret)
         embed = discord.Embed()
         embed.description = print_string
         await message.reply(embed=embed)
+    if (message.content.startswith(commandPrefix + 'info ')) or (message.content.startswith(commandPrefix + 'i ')):
+        num = int(message.content.split(' ')[1])
+        sortedList = lib.GetBooksByTimesSuggested(num)
+        print_string = 'Title - Times suggested\n\n'
+        for book in sortedList:
+            print_string += book.title + ' - ' + str(book.timesSuggested) + '\n'
+        embed = discord.Embed()
+        embed.description = print_string
+        await message.channel.send(embed=embed)
+    if (message.content == commandPrefix + 'info') or (message.content == commandPrefix + 'i'):
+        sortedList = lib.GetBooksByTimesSuggested()
+        print_string = 'Title - Times suggested\n\n'
+        for book in sortedList:
+            print_string += book.title + ' - ' + str(book.timesSuggested) + '\n'
+        embed = discord.Embed()
+        embed.description = print_string
+        await message.channel.send(embed=embed)
 
 client.run(TOKEN)

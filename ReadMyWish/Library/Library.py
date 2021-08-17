@@ -3,6 +3,10 @@ import json
 import time
 import os.path
 
+try: import operator
+except: ImportError: keyfunc = lambda x: x.timesSuggested
+else: keyfunc = operator.attrgetter("timesSuggested")
+
 class Library():
     def __init__(self, filepath='lib.json'):
         self.books = {}
@@ -82,3 +86,9 @@ class Library():
 
         fp.close()
         return libDict['saveTime']
+
+    def GetBooksByTimesSuggested(self, num=10):
+        sortedList = sorted(list(self.books.values()), key=keyfunc, reverse=True)
+        if len(sortedList) > num:
+            return sortedList[:num]
+        return sortedList
