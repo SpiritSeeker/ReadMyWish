@@ -57,7 +57,7 @@ async def CommandHandler(message):
         sortedList = lib.GetBooksByTimesSuggested(num)
         print_string = 'Title - Times suggested\n\n'
         for book in sortedList:
-            print_string += book.title + ' - ' + str(book.timesSuggested) + '\n'
+            print_string += book.bookInfo['title'] + ' - ' + str(book.timesSuggested) + '\n'
         embed = discord.Embed()
         embed.description = print_string
         await message.channel.send(embed=embed)
@@ -65,7 +65,7 @@ async def CommandHandler(message):
         sortedList = lib.GetBooksByTimesSuggested()
         print_string = 'Title - Times suggested\n\n'
         for book in sortedList:
-            print_string += book.title + ' - ' + str(book.timesSuggested) + '\n'
+            print_string += book.bookInfo['title'] + ' - ' + str(book.timesSuggested) + '\n'
         embed = discord.Embed()
         embed.description = print_string
         await message.channel.send(embed=embed)
