@@ -1,54 +1,33 @@
 import discord
 
-def GetLargestThumbnail(item):
-    try:
-        urls = item['volumeInfo']['imageLinks'].keys()
-        if len(urls) == 0:
-            return None
-
-        sizes = ['largeThumbnail', 'thumbnail', 'smallThumbnail']
-        for size in sizes:
-            if size in urls:
-                return item['volumeInfo']['imageLinks'][size]
-        return None
-    except:
-        return None
-
 def GetEmbed(item):
     embed = discord.Embed()
-    embed.title = item['volumeInfo']['title']
-    embed.url = item['volumeInfo']['previewLink']
+    embed.title = item['title']
+    embed.url = item['link']
 
     description_string = 'by '
-    authors = item['volumeInfo']['authors']
+    authors = item['authors']
     description_string += authors[0]
     if len(authors) > 1:
         for i in range(len(authors) - 1):
             description_string += ', ' + authors[i+1]
-    try:
-        description_string += ' | ' + str(item['volumeInfo']['pageCount']) + ' pages'
-    except:
-        pass
-    try:
-        description_string += ' | Published: ' + str(item['volumeInfo']['publishedDate'])
-    except:
-        pass
-    try:
+    if 'pageCount' in item.keys():
+        description_string += ' | ' + str(item['pageCount']) + ' pages'
+    if 'publishedDate' in item.keys():
+        description_string += ' | Published: ' + str(item['publishedDate'])
+    if 'genres' in item.keys():
         string_segment = ' | Genre: '
-        for i in range(len(item['volumeInfo']['categories'])):
+        for i in range(len(item['genres'])):
             if i == 0:
-                string_segment += item['volumeInfo']['categories'][i]
+                string_segment += item['genres'][i]
             else:
-                string_segment += ', ' + item['volumeInfo']['categories'][i]
+                string_segment += ', ' + item['genres'][i]
         description_string += string_segment
-    except:
-        pass
 
-    description_string += '\n\n> {}'.format(item['volumeInfo']['description'])
+    description_string += '\n\n> {}'.format(item['synopsis'])
     embed.description = description_string
 
-    thumbnailUrl = GetLargestThumbnail(item)
-    if not thumbnailUrl == None:
-        embed.set_thumbnail(url=thumbnailUrl)
+    if 'imageLink' in item.keys():
+        embed.set_image(url=item['imageLink'])
 
     return embed

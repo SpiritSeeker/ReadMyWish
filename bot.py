@@ -1,5 +1,5 @@
 import discord
-from ReadMyWish.API import GoogleBooksAPI
+from ReadMyWish.API import SearchAPI
 from ReadMyWish.Library import Library, Book
 from ReadMyWish.Utils.Functions import GetEmbed
 
@@ -13,6 +13,7 @@ commandPrefix = 'r!'
 client = discord.Client(intents=intents)
 
 lib = Library.Library()
+api = SearchAPI.SearchAPI('GoogleBooks')
 
 @client.event
 async def on_ready():
@@ -28,7 +29,7 @@ async def on_message(message):
 
     if message.content.startswith('{{'):
         search_str = message.content[2:].rpartition('}}')[0]
-        ret = GoogleBooksAPI.BookSearch(search_str)
+        ret = api.Search(search_str)
 
         lib.AddEntry(ret, message.author.name, message.author.id)
         book = lib.GetBook(ret)
@@ -44,11 +45,11 @@ async def on_message(message):
 
 async def CommandHandler(message):
     if message.content.startswith(commandPrefix + 'search '):
-        ret = GoogleBooksAPI.BookSearch(message.content.replace(commandPrefix + 'search ', ''))
+        ret = api.Search(message.content.replace(commandPrefix + 'search ', ''))
         embed = GetEmbed(ret)
         await message.reply(embed=embed)
     if message.content.startswith(commandPrefix + 's '):
-        ret = GoogleBooksAPI.BookSearch(message.content.replace(commandPrefix + 's ', ''))
+        ret = api.Search(message.content.replace(commandPrefix + 's ', ''))
         embed = GetEmbed(ret)
         await message.reply(embed=embed)
     if (message.content.startswith(commandPrefix + 'info ')) or (message.content.startswith(commandPrefix + 'i ')):

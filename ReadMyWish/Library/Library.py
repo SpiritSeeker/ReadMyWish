@@ -15,7 +15,7 @@ class Library():
             self.LoadLibrary()
 
     def AddEntry(self, bookInfo, name, id):
-        idString = bookInfo['volumeInfo']['title'] + ' - ' + bookInfo['volumeInfo']['authors'][0]
+        idString = bookInfo['title'] + ' - ' + bookInfo['authors'][0]
         idString = idString.lower()
         if not idString in self.books.keys():
             self.ForceAdd(idString, bookInfo)
@@ -35,7 +35,7 @@ class Library():
             self.SaveLibrary()
 
     def GetBook(self, bookInfo):
-        idString = bookInfo['volumeInfo']['title'] + ' - ' + bookInfo['volumeInfo']['authors'][0]
+        idString = bookInfo['title'] + ' - ' + bookInfo['authors'][0]
         idString = idString.lower()
         if idString in self.books.keys():
             return self.books[idString]
@@ -47,15 +47,7 @@ class Library():
         for id in self.books:
             booksDict = {}
             booksDict['idString'] = id
-
-            infoDict = {}
-            infoDict['title'] = self.books[id].title
-            infoDict['subtitle'] = self.books[id].subtitle
-            infoDict['link'] = self.books[id].link
-            infoDict['authors'] = self.books[id].authors
-            infoDict['description'] = self.books[id].description
-            booksDict['bookInfo'] = infoDict
-
+            booksDict['bookInfo'] = self.books[id].bookInfo
             booksDict['suggestedBy'] = self.books[id].suggestNames
             booksDict['timesSuggested'] = self.books[id].timesSuggested
             booksList.append(booksDict)
@@ -72,12 +64,7 @@ class Library():
 
         for bookDict in libDict['books']:
             if bookDict['idString'] not in self.books.keys():
-                book = Book()
-                book.title = bookDict['bookInfo']['title']
-                book.subtitle = bookDict['bookInfo']['subtitle']
-                book.link = bookDict['bookInfo']['link']
-                book.authors = bookDict['bookInfo']['authors']
-                book.description = bookDict['bookInfo']['description']
+                book = Book(bookDict['bookInfo'])
 
                 book.suggestNames = bookDict['suggestedBy']
                 book.timesSuggested = bookDict['timesSuggested']

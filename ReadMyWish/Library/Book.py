@@ -1,14 +1,9 @@
+from copy import deepcopy
+
 class Book():
     def __init__(self, bookInfo=None):
         if not bookInfo == None:
-            self.title = bookInfo['volumeInfo']['title']
-            self.link = bookInfo['volumeInfo']['previewLink']
-            if 'subtitle' in bookInfo['volumeInfo'].keys():
-                self.subtitle = bookInfo['volumeInfo']['subtitle']
-            else:
-                self.subtitle = ''
-            self.authors = bookInfo['volumeInfo']['authors']
-            self.description = bookInfo['volumeInfo']['description']
+            self.bookInfo = deepcopy(bookInfo)
 
         self.suggestNames = {}
         self.timesSuggested = 0
