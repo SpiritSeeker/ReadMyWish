@@ -1,0 +1,11 @@
+{
+  "title": "Title of the book (str)",
+  "subtitle": "(Optional) Subtitle of the book (str)",
+  "link": "Link to the book (str)",
+  "pageCount": "(Optional) Page count of the book (int)",
+  "publishedDate": "(Optional) Publication date of the book (str)",
+  "genres": "(Optional) Genres of the book (list of str)",
+  "authors": "Authors of the book (list of str)",
+  "synopsis": "Synopsis of the book (str)",
+  "imageLink": "Url of the cover image of the book (str)"
+}

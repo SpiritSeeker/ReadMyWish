@@ -1,4 +1,4 @@
-from ReadMyWish.API import GoogleBooksAPI
+from ReadMyWish.API import GoogleBooksAPI, AmazonAPI
 
 def _GetLargestThumbnail(item):
     try:
@@ -38,4 +38,9 @@ class SearchAPI():
             thumbnailUrl = _GetLargestThumbnail(ret)
             if not thumbnailUrl == None:
                 resultDict['imageLink'] = thumbnailUrl
+            return resultDict
+
+        if self.api == 'Amazon':
+            # search and return dict
+            resultDict = {}
             return resultDict
