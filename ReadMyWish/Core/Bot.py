@@ -65,7 +65,9 @@ class Bot():
 
     async def BookSearch(self, searchString):
         ret = self.api.Search(searchString)
-        await self.currentMessage.channel.send('Search feature not implemented yet. Consider contributing to see this and other cool features implemented in the near future!')
+
+        embed = GetSearchEmbed(ret, searchString)
+        await self.currentMessage.reply(embed=embed)
 
     async def GetTopBooks(self, num):
         sortedList = self.lib.GetBooksByTimesSuggested(num)

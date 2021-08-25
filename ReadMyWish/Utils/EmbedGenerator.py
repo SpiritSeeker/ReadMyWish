@@ -32,6 +32,45 @@ def GetBookInfoEmbed(item):
 
     return embed
 
+def GetSearchEmbed(item, searchString):
+    embed = discord.Embed()
+    embed.title = 'Displaying search results for \'' + searchString + '\''
+
+    if len(item) < 10:
+        numTitles = len(item)
+    else:
+        numTitles = 10
+
+    displayString = ''
+
+    for i in range(numTitles):
+        book = item[i]
+        displayString += '**' + str(i+1) + '. '
+        displayString += '[' + book['title'] + '](' + book['link'] + ')**\n'
+        description_string = 'by '
+        authors = book['authors']
+        description_string += authors[0]
+        if len(authors) > 1:
+            for i in range(len(authors) - 1):
+                description_string += ', ' + authors[i+1]
+        if 'pageCount' in book.keys():
+            description_string += ' | ' + str(book['pageCount']) + ' pages'
+        if 'publishedDate' in book.keys():
+            description_string += ' | Published: ' + str(book['publishedDate'])
+        if 'genres' in book.keys():
+            string_segment = ' | Genre: '
+            for i in range(len(book['genres'])):
+                if i == 0:
+                    string_segment += book['genres'][i]
+                else:
+                    string_segment += ', ' + book['genres'][i]
+            description_string += string_segment
+        description_string += '\n\n'
+        displayString += description_string
+
+    embed.description = displayString
+    return embed
+
 def GetHelpEmbed(command, commandPrefix):
     if command == 'all':
         displayString = '`' + commandPrefix + 'help [optional command]`\nDisplays the help text\n\n'
