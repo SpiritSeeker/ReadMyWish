@@ -1,7 +1,7 @@
 import discord
 from ReadMyWish.API import SearchAPI
 from ReadMyWish.Library import Library
-from ReadMyWish.Utils.Functions import GetEmbed
+from ReadMyWish.Utils.EmbedGenerator import *
 
 class Bot():
     def __init__(self, api='GoogleBooks', commandPrefix='r!', libSavePath='lib.json'):
@@ -43,13 +43,13 @@ class Bot():
                     await self.GetTopBooks(10)
 
     async def BookSuggestion(self, suggestString):
-        ret = self.api.Search(suggestString)
+        ret = self.api.GetBook(suggestString)
 
         self.lib.AddEntry(ret, self.currentMessage.author.name, self.currentMessage.author.id)
         book = self.lib.GetBook(ret)
 
-        embed = GetEmbed(ret)
-        footer = '\n\nThis book was suggested '
+        embed = GetBookInfoEmbed(ret)
+        footer = 'This book was suggested '
         if book.timesSuggested == 1:
             footer += '1 time.'
         else:
@@ -58,12 +58,13 @@ class Bot():
         await self.currentMessage.reply(embed=embed)
 
     async def BookInfo(self, searchString):
-        ret = self.api.Search(searchString)
+        ret = self.api.GetBook(searchString)
 
-        embed = GetEmbed(ret)
+        embed = GetBookInfoEmbed(ret)
         await self.currentMessage.reply(embed=embed)
 
     async def BookSearch(self, searchString):
+        ret = self.api.Search(searchString)
         await self.currentMessage.channel.send('Search feature not implemented yet. Consider contributing to see this and other cool features implemented in the near future!')
 
     async def GetTopBooks(self, num):
@@ -76,50 +77,9 @@ class Bot():
         await self.currentMessage.channel.send(embed=embed)
 
     async def HelpPage(self, command='all'):
-        if command == 'all':
-            displayString = '`' + self.commandPrefix + 'help [optional command]`\nDisplays the help text\n\n'
-            displayString += '`' + self.commandPrefix + 'info <name>`\nDisplays information of a book by name\n\n'
-            displayString += '`' + self.commandPrefix + 'search <search_string>`\nSearches for books\n\n'
-            displayString += '`' + self.commandPrefix + 'top [optional number]`\nDisplays most suggested books\n\n'
-            displayString += '`' + self.commandPrefix + 'suggest <name>`\nAdds book to suggested list\n\n'
-            displayString += 'Type `' + self.commandPrefix + 'help <command>` for more info on a command'
-            embed = discord.Embed()
-            embed.title = 'Commands:'
-            embed.description = displayString
-            await self.currentMessage.channel.send(embed=embed)
+        embed = GetHelpEmbed(command, self.commandPrefix)
 
-        elif command == 'help':
-            embed = discord.Embed()
-            embed.title = self.commandPrefix + 'help'
-            embed.description = 'Displays the help text'
-            embed.add_field(name='Usage:', value='`' + self.commandPrefix + 'help [command]`')
-            await self.currentMessage.channel.send(embed=embed)
-
-        elif command == 'info':
-            embed = discord.Embed()
-            embed.title = self.commandPrefix + 'info'
-            embed.description = 'Searches and displays info of the most relevant book'
-            embed.add_field(name='Usage:', value='`' + self.commandPrefix + '[info|i] <name>`')
-            await self.currentMessage.channel.send(embed=embed)
-
-        elif command == 'search':
-            embed = discord.Embed()
-            embed.title = self.commandPrefix + 'search'
-            embed.description = 'Searches and displays the most relevant books'
-            embed.add_field(name='Usage:', value='`' + self.commandPrefix + '[search|s] <search_string>`')
-            await self.currentMessage.channel.send(embed=embed)
-
-        elif command == 'top':
-            embed = discord.Embed()
-            embed.title = self.commandPrefix + 'top'
-            embed.description = 'Displays the most suggested books'
-            embed.add_field(name='Usage:', value='`' + self.commandPrefix + '[top|t] [number]`')
-            await self.currentMessage.channel.send(embed=embed)
-
-        elif command == 'suggest':
-            embed = discord.Embed()
-            embed.title = self.commandPrefix + 'suggest'
-            embed.description = 'Adds book to the suggested list'
-            embed.add_field(name='Usage:', value='`' + self.commandPrefix + 'suggest <name>`', inline=False)
-            embed.add_field(name='Alternate usage:', value='`' + '{{name}}`', inline=False)
+        if embed == None:
+            await self.currentMessage.channel.send('Invalid command \'' + command + '\'.')
+        else:
             await self.currentMessage.channel.send(embed=embed)

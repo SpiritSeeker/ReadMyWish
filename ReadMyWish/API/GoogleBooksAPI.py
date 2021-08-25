@@ -8,6 +8,4 @@ def BookSearch(title):
     response = urlopen(search_api + search_string)
     item_list = json.load(response)
 
-    for item in item_list['items']:
-        if ('description' in item['volumeInfo'].keys()) and (item['kind'] == 'books#volume'):
-            return item
+    return item_list
