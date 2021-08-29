@@ -1,4 +1,5 @@
 import discord
+from math import ceil
 
 def GetBookInfoEmbed(item):
     embed = discord.Embed()
@@ -32,18 +33,21 @@ def GetBookInfoEmbed(item):
 
     return embed
 
-def GetSearchEmbed(item, searchString):
+def GetSearchEmbed(item, searchString, page, titlesPerPage):
     embed = discord.Embed()
     embed.title = 'Displaying search results for \'' + searchString + '\''
 
-    if len(item) < 10:
-        numTitles = len(item)
-    else:
-        numTitles = 10
+    numPages = int(ceil(len(item) / titlesPerPage))
+
+    startTitle = page * titlesPerPage
+    endTitle = startTitle + titlesPerPage
+
+    if len(item) < endTitle:
+        endTitle = len(item)
 
     displayString = ''
 
-    for i in range(numTitles):
+    for i in range(startTitle, endTitle):
         book = item[i]
         displayString += '**' + str(i+1) + '. '
         displayString += '[' + book['title'] + '](' + book['link'] + ')**\n'
@@ -68,7 +72,10 @@ def GetSearchEmbed(item, searchString):
         description_string += '\n\n'
         displayString += description_string
 
+    footerText = 'Displaying results ' + str(startTitle+1) + '-' + str(endTitle)
+    footerText += ' of ' + str(len(item))
     embed.description = displayString
+    embed.set_footer(text=footerText)
     return embed
 
 def GetHelpEmbed(command, commandPrefix):

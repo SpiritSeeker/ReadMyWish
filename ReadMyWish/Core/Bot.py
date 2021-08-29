@@ -1,4 +1,5 @@
 import discord
+from discord_components import Button, ButtonStyle
 from ReadMyWish.API import SearchAPI
 from ReadMyWish.Library import Library
 from ReadMyWish.Utils.EmbedGenerator import *
@@ -64,10 +65,17 @@ class Bot():
         await self.currentMessage.reply(embed=embed)
 
     async def BookSearch(self, searchString):
-        ret = self.api.Search(searchString)
+        self.searchResults = self.api.Search(searchString)
+        self.searchString = searchString
+        self.searchPage = 0
+        self.titlesPerPage = 3
 
-        embed = GetSearchEmbed(ret, searchString)
-        await self.currentMessage.reply(embed=embed)
+        embed = GetSearchEmbed(self.searchResults, self.searchString, self.searchPage, self.titlesPerPage)
+
+        components = []
+        if len(self.searchResults) > self.titlesPerPage:
+            components.append(Button(label='Next', custom_id='searchNext'))
+        self.sentMessage = await self.currentMessage.reply(embed=embed, components=components)
 
     async def GetTopBooks(self, num):
         sortedList = self.lib.GetBooksByTimesSuggested(num)
@@ -85,3 +93,27 @@ class Bot():
             await self.currentMessage.channel.send('Invalid command \'' + command + '\'.')
         else:
             await self.currentMessage.channel.send(embed=embed)
+
+    async def InteractionHandler(self, interaction):
+        if interaction.user == self.currentMessage.author:
+            print('Button Clicked!', interaction.custom_id)
+            if interaction.custom_id == 'searchNext':
+                self.searchPage += 1
+
+                embed = GetSearchEmbed(self.searchResults, self.searchString, self.searchPage, self.titlesPerPage)
+
+                components = [[Button(label='Previous', custom_id='searchPrev')]]
+                if len(self.searchResults) > self.titlesPerPage * (self.searchPage + 1):
+                    components[0].append(Button(label='Next', custom_id='searchNext'))
+                self.sentMessage = await self.currentMessage.reply(embed=embed, components=components)
+
+            elif interaction.custom_id == 'searchPrev':
+                self.searchPage -= 1
+
+                embed = GetSearchEmbed(self.searchResults, self.searchString, self.searchPage, self.titlesPerPage)
+
+                components = [[]]
+                if self.searchPage > 0:
+                    components[0].append(Button(label='Previous', custom_id='searchPrev'))
+                components[0].append(Button(label='Next', custom_id='searchNext'))
+                self.sentMessage = await self.currentMessage.reply(embed=embed, components=components)
